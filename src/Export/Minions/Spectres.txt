@@ -241,3 +241,7 @@ local minions, mod = ...
 #spectre Metadata/Monsters/LeagueAzmeri/SpecialCorpses/Hydra/HydraLow
 #spectre Metadata/Monsters/LeagueAzmeri/SpecialCorpses/Hydra/HydraMid
 #spectre Metadata/Monsters/LeagueAzmeri/SpecialCorpses/Hydra/HydraHigh_
+-- Dark Marionette
+#spectre Metadata/Monsters/LeagueAzmeri/SpecialCorpses/Mannequin/MannequinLow
+#spectre Metadata/Monsters/LeagueAzmeri/SpecialCorpses/Mannequin/MannequinMid # DarkMarionetteExplode
+#spectre Metadata/Monsters/LeagueAzmeri/SpecialCorpses/Mannequin/MannequinHigh_ # DarkMarionetteExplodePerfect
