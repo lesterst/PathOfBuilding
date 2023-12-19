@@ -237,3 +237,7 @@ local minions, mod = ...
 #spectre Metadata/Monsters/LeagueAzmeri/SpecialCorpses/Firefury/FirefuryLow
 #spectre Metadata/Monsters/LeagueAzmeri/SpecialCorpses/Firefury/FirefuryMid
 #spectre Metadata/Monsters/LeagueAzmeri/SpecialCorpses/Firefury/FirefuryHigh_
+-- Hydra
+#spectre Metadata/Monsters/LeagueAzmeri/SpecialCorpses/Hydra/HydraLow
+#spectre Metadata/Monsters/LeagueAzmeri/SpecialCorpses/Hydra/HydraMid
+#spectre Metadata/Monsters/LeagueAzmeri/SpecialCorpses/Hydra/HydraHigh_
