@@ -3,6 +3,17 @@
 -- Module: Mod Tools
 -- Various functions for dealing with modifiers
 --
+-- Creation of Modifiers
+--The createMod function constructs a modifier object with specific attributes like name, type, value, flags, keyword flags, and source.
+--Parsing Modifiers
+--parseMod and parseModCache functions seem to load a module for parsing modifiers from a specified path.
+--Parsing Tags
+--parseTags takes a string input and parses it to extract tags and their values, returning them in a table format.
+--Formatting and Comparing Modifiers
+--Functions like formatModParams, formatMod, formatSourceMod, and compareModParams are used to format modifiers and their attributes into strings for display or comparison purposes.
+--Setting Source for Modifiers
+--setSource allows the modification of a modifier's source.
+
 local pairs = pairs
 local ipairs = ipairs
 local select = select

@@ -14,6 +14,7 @@ local m_sin = math.sin
 local m_cos = math.cos
 local m_pi = math.pi
 
+-- Loading Modules: It begins by loading various modules necessary for the program's functionality. These modules handle game versions, common functions, data management, item manipulation, calculations, and more.
 LoadModule("GameVersions")
 LoadModule("Modules/Common")
 LoadModule("Modules/Data")
@@ -34,6 +35,7 @@ LoadModule("Modules/BuildSiteTools")
 	end
 end]]
 
+-- JIT (Just-In-Time) Compilation: It checks if a specific argument (--no-jit) is provided when executing the program. If found, it disables JIT compilation, likely for debugging or specific runtime considerations.
 if arg and isValueInTable(arg, "--no-jit") then
 	require("jit").off()
 	ConPrintf("JIT Disabled")
@@ -42,6 +44,7 @@ end
 local tempTable1 = { }
 local tempTable2 = { }
 
+-- Initialization: The main function initializes the program's control host and sets up various modes, such as "LIST" and "BUILD," presumably for different functionalities or interfaces within the program.
 main = new("ControlHost")
 
 function main:Init()
@@ -50,6 +53,7 @@ function main:Init()
 	self.modes["LIST"] = LoadModule("Modules/BuildList")
 	self.modes["BUILD"] = LoadModule("Modules/Build")
 
+	-- File Handling and Paths: It determines the file paths for storing user data, default build paths, and checks if the program is running in dev mode or standalone mode. Depending on the mode, it decides where to store user data.
 	if launch.devMode or (GetScriptPath() == GetRuntimePath() and not launch.installedMode) then
 		-- If running in dev mode or standalone mode, put user data in the script path
 		self.userPath = GetScriptPath().."/"
@@ -61,6 +65,8 @@ function main:Init()
 	self.buildPath = self.defaultBuildPath
 	MakeDir(self.buildPath)
 
+	-- Mod Cache Handling: Depending on the mode (dev or regular), it either saves a new mod cache or loads an existing mod cache. This cache seems to be related to parsing modifications.
+	-- Keyboard Shortcuts: It detects certain key combinations (CTRL or CTRL + SHIFT) for special actions, like allowing tree downloads or manipulating the mod cache.
 	if launch.devMode and IsKeyDown("CTRL") then
 		-- If modLib.parseMod doesn't find a cache entry it generates it.
 		-- Not loading pre-generated cache causes it to be rebuilt
@@ -74,7 +80,7 @@ function main:Init()
 		self.allowTreeDownload = true
 	end
 
-
+-- Setting Defaults: Several settings and variables are initialized here, such as color codes, separators for numbers, default item affix quality, and whether to show warnings or tooltips.
 	self.inputEvents = { }
 	self.popups = { }
 	self.tooltipLines = { }
@@ -96,7 +102,12 @@ function main:Init()
 	self.slotOnlyTooltips = true
 	self.POESESSID = ""
 
+	-- Variable Initialization:
+	--ignoreBuild is initialized to nil.
+	--Various data structures (self.tree, self.uniqueDB, self.rareDB, self.sharedItemList, self.sharedItemSetList, self.toastMessages) and controls for the GUI are initialized.
 	local ignoreBuild
+	-- Downloading and Loading Build:
+	--Checks if an argument arg[1] exists. If so, it triggers a function buildSites.DownloadBuild to download a build. Depending on the success of the download, it either sets a mode with build data or sets a default mode.
 	if arg[1] then
 		buildSites.DownloadBuild(arg[1], nil, function(isSuccess, data)
 			if not isSuccess then
@@ -121,7 +132,8 @@ function main:Init()
 
 	self.uniqueDB = { list = { }, loading = true }
 	self.rareDB = { list = { }, loading = true }
-
+-- Loading Item Databases:
+	--Defines a function loadItemDBs() that populates databases for unique and rare items by iterating through predefined data structures (data.uniques and data.rares). It creates items based on the raw data and stores them in respective databases (self.uniqueDB.list and self.rareDB.list).
 	local function loadItemDBs()
 		for type, typeList in pairsYield(data.uniques) do
 			for _, raw in pairs(typeList) do
@@ -169,6 +181,8 @@ function main:Init()
 		self.defaultItemAffixQuality = saved
 	end
 
+	-- Configuration of GUI Controls:
+	--Defines various GUI controls such as buttons (controls.options, controls.about, controls.applyUpdate, controls.checkUpdate, controls.dismissToast), labels (controls.forkLabel, controls.versionLabel, controls.devMode), and configures their behaviors, visibility, and labels based on certain conditions or states.
 	self.sharedItemList = { }
 	self.sharedItemSetList = { }
 
@@ -222,7 +236,8 @@ function main:Init()
 
 	self.mainBarHeight = 58
 	self.toastMessages = { }
-
+-- Displaying Developer Mode Warning:
+	--If the application is in developer mode (launch.devMode) and certain conditions are met regarding the time, it adds a warning message to be displayed as a toast message in the GUI.
 	if launch.devMode and GetTime() >= 0 and GetTime() < 15000 then
 		t_insert(self.toastMessages, [[
 ^xFF7700Warning: ^7Developer Mode active!
@@ -234,9 +249,13 @@ of using one of the installers. If that is the case,
 please reinstall using one of the installers from
 the "Releases" section of the GitHub page.]])
 	end
-
+-- Load Shared Items:
+	--Calls the method LoadSharedItems() to presumably load some shared items/settings.
 	self:LoadSharedItems()
-
+-- Frame Functions:
+	--Defines functions to be executed on specific frames:
+	--A function named "FirstFrame" runs on the first frame. It performs specific tasks and then removes itself from further execution.
+	--Another function named "LoadItems" (if self.saveNewModCache is false) creates a coroutine for loadItemDBs and executes it incrementally on subsequent frames.
 	self.onFrameFuncs = {
 		["FirstFrame"] = function()
 			self.onFrameFuncs["FirstFrame"] = nil
@@ -261,7 +280,8 @@ the "Releases" section of the GitHub page.]])
 		end
 	end
 end
-
+-- Unicode Detection:
+--DetectUnicodeSupport() determines if the Lua environment supports Unicode by checking the existence of utf8 in the global environment (_G.utf8).
 function main:DetectUnicodeSupport()
 	-- PoeCharm has utf8 global that normal PoB doesn't have
 	self.unicode = type(_G.utf8) == "table"
@@ -291,7 +311,10 @@ function main:SaveModCache()
 	end
 	out:close()
 end
-
+-- Loading Tree and Initialization Functions:
+--LoadTree() loads a specific tree version if it exists or returns nil.
+--CanExit() checks if the application can exit and handles exit logic.
+--Shutdown() performs shutdown tasks, saving settings, and calling shutdown methods for the current mode.
 function main:LoadTree(treeVersion)
 	if self.tree[treeVersion] then
 		data.setJewelRadiiGlobally(treeVersion)
@@ -319,6 +342,13 @@ function main:Shutdown()
 	self:SaveSettings()
 end
 
+-- Frame Execution:
+--OnFrame() is the main frame execution function:
+--Handles screen size detection and adjusts layout based on screen dimensions.
+--Manages mode changes and initializes mode-specific behaviors.
+--Processes input events for popups or controls.
+--Manages toast messages (displaying notifications).
+--Draws GUI elements such as controls, popups, and drag text indicators.
 function main:OnFrame()
 	self.screenW, self.screenH = GetScreenSize()
 
@@ -448,7 +478,9 @@ function main:OnFrame()
 	SetDrawColor(0, 0, 0)
 	DrawImage(nil, par + 500, 200, 2, 750)
 	DrawImage(nil, 500, par + 200, 759, 2)]]
-	
+
+	-- Key Event Handling:
+	--Processes key events in the GUI. If the F1 key is pressed (KeyUp event), it triggers the display of an "About" popup based on the current view mode (self.mode) or defaults to the "Build List" tab.
 	if self.inputEvents and not itemLib.wiki.triggered then
 		for _, event in ipairs(self.inputEvents) do
 			if event.type == "KeyUp" and event.key == "F1" then
@@ -468,6 +500,8 @@ function main:OnFrame()
 	end
 end
 
+-- Input Event Handling:
+--Defines three methods (OnKeyDown, OnKeyUp, OnChar) for handling different types of key events (KeyDown, KeyUp, Char) and stores the events in self.inputEvents.
 function main:OnKeyDown(key, doubleClick)
 	t_insert(self.inputEvents, { type = "KeyDown", key = key, doubleClick = doubleClick })
 end
@@ -480,6 +514,9 @@ function main:OnChar(key)
 	t_insert(self.inputEvents, { type = "Char", key = key })
 end
 
+-- Mode Management:
+--SetMode() sets a new mode for the application based on provided arguments.
+--CallMode() calls a specific function within the current mode, if it exists.
 function main:SetMode(newMode, ...)
 	self.newMode = newMode
 	self.newModeArgs = {...}
@@ -492,6 +529,10 @@ function main:CallMode(func, ...)
 	end
 end
 
+--Settings Loading:
+--LoadSettings() loads application settings from an XML file (Settings.xml) stored in the user's path (self.userPath).
+--Parses various settings related to modes, accounts, miscellaneous configurations, such as sorting, colors, separators, warnings, etc.
+--Updates application variables based on the parsed settings.
 function main:LoadSettings(ignoreBuild)
 	local setXML, errMsg = common.xml.LoadXMLFile(self.userPath.."Settings.xml")
 	if not setXML then
@@ -611,6 +652,10 @@ function main:LoadSettings(ignoreBuild)
 	end
 end
 
+--main:LoadSharedItems()
+--Loads shared items from the XML file into the application's memory.
+--Parses the XML file and extracts shared items and item sets.
+--Constructs items and item sets using the provided data and stores them in self.sharedItemList and self.sharedItemSetList respectively.
 function main:LoadSharedItems()
 	local setXML, errMsg = common.xml.LoadXMLFile(self.userPath.."Settings.xml")
 	if not setXML then
@@ -654,6 +699,11 @@ function main:LoadSharedItems()
 	end
 end
 
+--main:SaveSettings()
+--Constructs an XML structure to save settings and shared items.
+--Creates XML elements and attributes based on the application's configuration.
+--Builds the XML structure with mode, accounts, shared items, and miscellaneous settings.
+--Writes the constructed XML structure into the Settings.xml file using common.xml.SaveXMLFile().
 function main:SaveSettings()
 	local setXML = { elem = "PathOfBuilding" }
 	local mode = { elem = "Mode", attrib = { mode = self.mode } }
@@ -717,6 +767,11 @@ function main:SaveSettings()
 	end
 end
 
+--OpenOptionsPopup()
+--Creates a popup window for configuring application options.
+--Dynamically generates UI controls (dropdowns, labels, checkboxes, etc.) based on settings such as connection protocol, proxy settings, build paths, colors, and more.
+--Allows users to modify various settings interactively (e.g., connection protocol, proxy settings, colors, default character level, etc.).
+--Provides options to save or cancel changes made in the popup.
 function main:OpenOptionsPopup()
 	local controls = { }
 
@@ -980,6 +1035,9 @@ function main:OpenOptionsPopup()
 	self:OpenPopup(popupWidth, currentY, "Options", controls, "save", nil, "cancel")
 end
 
+-- SetManifestBranch(branchName)
+--Updates a specific attribute within an XML file (manifest.xml) that seems to handle the program's versioning or branch information.
+--Opens and modifies the XML content to change the branch information based on the provided branchName.
 function main:SetManifestBranch(branchName)
 	local xml = require("xml")
 	local manifestLocation = "manifest.xml"
@@ -1000,6 +1058,11 @@ function main:SetManifestBranch(branchName)
 	xml.SaveXMLFile(localManXML[1], manifestLocation)
 end
 
+-- OpenUpdatePopup()
+--Generates a popup window displaying updates or changes in the application version.
+--Reads and parses a changelog.txt file to extract version-specific updates and dates.
+--Creates a UI text list with version numbers and their associated updates.
+--Provides options to either update the application or cancel the update process.
 function main:OpenUpdatePopup()
 	local changeList = { }
 	local changelogName = launch.devMode and "../changelog.txt" or "changelog.txt"
@@ -1036,6 +1099,10 @@ function main:OpenUpdatePopup()
 	self:OpenPopup(800, 600, "Update Available", controls)
 end
 
+-- main:OpenAboutPopup(helpSectionIndex)
+--This function seems to create a popup window containing information about the application.
+--It reads from changelog.txt and help.txt to populate the changelog and help sections respectively.
+--It creates controls for version history, help sections, and a text list control to display either the changelog or help information based on the input helpSectionIndex.
 function main:OpenAboutPopup(helpSectionIndex)
 	local textSize, titleSize, popupWidth = 16, 24, 810
 	local changeList = { }
@@ -1147,6 +1214,9 @@ function main:OpenAboutPopup(helpSectionIndex)
 	self:OpenPopup(popupWidth, 628, "About", controls)
 end
 
+-- main:DrawBackground(viewPort)
+--This function is responsible for drawing the background of the application based on the provided viewPort dimensions.
+--It checks for different background images (Background1 and Background2) and draws them accordingly.
 function main:DrawBackground(viewPort)
 	SetDrawLayer(nil, -100)
 	SetDrawColor(0.5, 0.5, 0.5)
@@ -1158,6 +1228,9 @@ function main:DrawBackground(viewPort)
 	SetDrawLayer(nil, 0)
 end
 
+-- main:DrawArrow(x, y, width, height, dir)
+--This function draws an arrow at the specified x and y coordinates based on the provided direction (dir: UP, RIGHT, DOWN, LEFT).
+--It calculates the vertices of the arrow shape and then renders it.
 function main:DrawArrow(x, y, width, height, dir)
 	local x1 = x - width / 2
 	local x2 = x + width / 2
@@ -1184,6 +1257,9 @@ function main:DrawCheckMark(x, y, size)
 	DrawImageQuad(nil, x + size * 0.40, y + size * 0.90, x + size * 0.35, y + size * 0.75, x + size * 0.80, y + size * 0.10, x + size * 0.90, y + size * 0.20)
 end
 
+-- main:WorldToScreen(x, y, z, width, height)
+--Converts world coordinates (x, y, z) to screen coordinates based on the given width and height of the viewport.
+--The function involves several mathematical calculations to perform the conversion.
 do
 	local cos45 = m_cos(m_pi / 4)
 	local cos35 = m_cos(m_pi * 0.195)
@@ -1200,6 +1276,9 @@ do
 	end
 end
 
+-- main:RenderCircle(x, y, width, height, oX, oY, radius)
+--Renders a circle on the screen at the given x and y coordinates with a specified radius.
+--It utilizes main:WorldToScreen to convert world coordinates to screen coordinates.
 function main:RenderCircle(x, y, width, height, oX, oY, radius)
 	local minX = wipeTable(tempTable1)
 	local maxX = wipeTable(tempTable2)
@@ -1223,6 +1302,8 @@ function main:RenderCircle(x, y, width, height, oX, oY, radius)
 	end
 end
 
+-- main:RenderRing(x, y, width, height, oX, oY, radius, size)
+--Similar to RenderCircle but renders a ring (hollow circle) with a specified size.
 function main:RenderRing(x, y, width, height, oX, oY, radius, size)
 	local lastX, lastY
 	for d = 0, 360, 0.2 do
@@ -1235,6 +1316,8 @@ function main:RenderRing(x, y, width, height, oX, oY, radius, size)
 	end
 end
 
+-- main:StatColor(stat, base, limit)
+--Determines the color code for displaying statistics based on certain conditions like exceeding a limit or differing from a base value.
 function main:StatColor(stat, base, limit)
 	if limit and stat > limit then
 		return colorCodes.NEGATIVE
@@ -1245,6 +1328,9 @@ function main:StatColor(stat, base, limit)
 	end
 end
 
+-- main:MoveFolder(name, srcPath, dstPath)
+--Moves a folder and its contents from the source path to the destination path.
+--Recursively handles subfolders and files within the specified folder.
 function main:MoveFolder(name, srcPath, dstPath)
 	-- Create destination folder
 	local res, msg = MakeDir(dstPath..name)
@@ -1286,6 +1372,9 @@ function main:MoveFolder(name, srcPath, dstPath)
 	end
 end
 
+-- main:CopyFolder(srcName, dstName)
+--Copies a folder and its contents from the source path to the destination path.
+--Similar to MoveFolder, but it duplicates the folder and its content instead of moving it.
 function main:CopyFolder(srcName, dstName)
 	-- Create destination folder
 	local res, msg = MakeDir(dstName)
@@ -1321,16 +1410,23 @@ function main:CopyFolder(srcName, dstName)
 	end
 end
 
+-- main:OpenPopup(width, height, title, controls, enterControl, defaultControl, escapeControl)
+--Opens a popup window with specified dimensions, title, and controls.
+--Also accepts parameters for controlling the default, enter, and escape behaviors.
 function main:OpenPopup(width, height, title, controls, enterControl, defaultControl, escapeControl)
 	local popup = new("PopupDialog", width, height, title, controls, enterControl, defaultControl, escapeControl)
 	t_insert(self.popups, 1, popup)
 	return popup
 end
 
+-- main:ClosePopup()
+--Closes the topmost popup window.
 function main:ClosePopup()
 	t_remove(self.popups, 1)
 end
 
+-- main:OpenMessagePopup(title, msg)
+--Opens a popup displaying a message with an 'Ok' button to close the popup.
 function main:OpenMessagePopup(title, msg)
 	local controls = { }
 	local numMsgLines = 0
@@ -1344,6 +1440,9 @@ function main:OpenMessagePopup(title, msg)
 	return self:OpenPopup(m_max(DrawStringWidth(16, "VAR", msg) + 30, 190), 70 + numMsgLines * 16, title, controls, "close")
 end
 
+-- main:OpenConfirmPopup(title, msg, confirmLabel, onConfirm)
+--Opens a confirmation popup displaying a message with two options: Confirm and Cancel.
+--Accepts a callback function (onConfirm) to execute when confirmed.
 function main:OpenConfirmPopup(title, msg, confirmLabel, onConfirm)
 	local controls = { }
 	local numMsgLines = 0
@@ -1362,6 +1461,9 @@ function main:OpenConfirmPopup(title, msg, confirmLabel, onConfirm)
 	return self:OpenPopup(m_max(DrawStringWidth(16, "VAR", msg) + 30, 190), 70 + numMsgLines * 16, title, controls, "confirm")
 end
 
+-- main:OpenNewFolderPopup(path, onClose)
+--Opens a popup for creating a new folder with an input field for the folder name.
+--Invokes onClose with the newly created folder name or without any arguments if canceled.
 function main:OpenNewFolderPopup(path, onClose)
 	local controls = { }
 	controls.label = new("LabelControl", nil, 0, 20, 0, 16, "^7Enter folder name:")
@@ -1390,6 +1492,8 @@ function main:OpenNewFolderPopup(path, onClose)
 	main:OpenPopup(370, 100, "New Folder", controls, "create", "edit", "cancel")
 end
 
+-- main:SetWindowTitleSubtext(subtext)
+--Sets the window title for the application, appending a subtext if provided.
 function main:SetWindowTitleSubtext(subtext)
 	if not subtext or not self.showTitlebarName then
 		SetWindowTitle(APP_NAME)
@@ -1398,6 +1502,9 @@ function main:SetWindowTitleSubtext(subtext)
 	end
 end
 
+-- main:WrapString(str, height, width)
+--Wraps a string to fit within a specified width using a provided font height.
+--Splits the string into multiple lines to ensure it fits within the given dimensions.
 do
 	local wrapTable = { }
 	function main:WrapString(str, height, width)
