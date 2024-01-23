@@ -1410,11 +1410,8 @@ function main:CopyFolder(srcName, dstName)
 	end
 end
 
--- main:OpenPopup(width, height, title, controls, enterControl, defaultControl, escapeControl)
---Opens a popup window with specified dimensions, title, and controls.
---Also accepts parameters for controlling the default, enter, and escape behaviors.
-function main:OpenPopup(width, height, title, controls, enterControl, defaultControl, escapeControl)
-	local popup = new("PopupDialog", width, height, title, controls, enterControl, defaultControl, escapeControl)
+function main:OpenPopup(width, height, title, controls, enterControl, defaultControl, escapeControl, scrollBarFunc)
+	local popup = new("PopupDialog", width, height, title, controls, enterControl, defaultControl, escapeControl, scrollBarFunc)
 	t_insert(self.popups, 1, popup)
 	return popup
 end
