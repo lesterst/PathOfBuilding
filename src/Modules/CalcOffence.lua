@@ -3012,7 +3012,7 @@ function calcs.offence(env, actor, activeSkill)
 						end
 					end
 					if pass == 2 and breakdown then
-						t_insert(breakdown[damageType], s_format("= %d to %d", damageTypeHitMin, damageTypeHitMax))
+						t_insert(breakdown[damageType], s_format("= %.2f to %.2f", damageTypeHitMin, damageTypeHitMax))
 					end
 
 					-- Beginning of Leech Calculation for this DamageType

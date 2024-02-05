@@ -228,7 +228,7 @@ end
 function ItemClass:FindModifierSubstring(substring, itemSlotName)
 	local modLines = {}
 	local substring, explicit = substring:gsub("explicit ", "")
-
+	
 	-- The commented out line below is used at GGPK updates to check if any new modifiers
 	-- have been identified that need to be added to the manually maintained special modifier
 	-- pool in Data.lua (data.itemTagSpecial and data.itemTagSpecialExclusionPattern tables)

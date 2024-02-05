@@ -824,7 +824,7 @@ function buildMode:CloseBuild()
 	main:SetMode("LIST", self.dbFileName and self.buildName, self.dbFileSubPath)
 end
 
-function buildMode:Load(xml, fileName)
+function buildMode:Load(xml,filepath)
 	self.targetVersion = xml.attrib.targetVersion or legacyTargetVersion
 	if xml.attrib.viewMode then
 		self.viewMode = xml.attrib.viewMode

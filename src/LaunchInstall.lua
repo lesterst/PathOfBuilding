@@ -1,4 +1,5 @@
-#@ SimpleGraphic
+-- #@ SimpleGraphic
+print("LaunchInstall")
 -- Path of Building
 --
 -- Module: Launch Install

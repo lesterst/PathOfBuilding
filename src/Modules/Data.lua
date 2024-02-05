@@ -4,6 +4,7 @@
 -- Contains static data used by other modules.
 --
 
+-- LoadModule("../src/Data/Global")
 LoadModule("Data/Global")
 
 local m_min = math.min
@@ -899,7 +900,7 @@ data.printMissingMinionSkills = function()
 	for _, minion in pairs(data.minions) do
 		for _, skillId in ipairs(minion.skillList) do
 			if not data.skills[skillId] and not missing[skillId] then
-				ConPrintf("'%s' missing skill '%s'", minion.name, skillId)
+				-- ConPrintf("'%s' missing skill '%s'", minion.name, skillId)
 				missing[skillId] = true
 			end
 		end

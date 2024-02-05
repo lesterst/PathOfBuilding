@@ -3,7 +3,7 @@
 -- Module: Global
 -- Global constants
 --
-
+local bit32 = require("bit32")
 colorCodes = {
 	NORMAL = "^xC8C8C8",
 	MAGIC = "^x8888FF",
@@ -163,8 +163,9 @@ KeywordFlag.ChaosDot =	0x10000000
 KeywordFlag.MatchAll =	0x40000000
 
 -- Helper function to compare KeywordFlags
-local band = bit.band
-local MatchAllMask = bit.bnot(KeywordFlag.MatchAll)
+
+local band = bit32.band
+local MatchAllMask = bit32.bnot(KeywordFlag.MatchAll)
 ---@param keywordFlags number The KeywordFlags to be compared to.
 ---@param modKeywordFlags number The KeywordFlags stored in the mod.
 ---@return boolean Whether the KeywordFlags in the mod are satisfied.

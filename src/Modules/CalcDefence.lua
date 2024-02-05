@@ -1429,14 +1429,15 @@ function calcs.buildDefenceEstimations(env, actor)
 				if conversionExtra ~= 0 then
 					t_insert(breakdown[damageType.."EnemyDamage"], s_format("%s %d (enemy damage conversion)", conversionExtra > 0 and "+" or "-", conversionExtra >= 0 and conversionExtra or -conversionExtra))
 				end
-				t_insert(breakdown[damageType.."EnemyDamage"], s_format("= %d", output[damageType.."EnemyDamage"]))
+				t_insert(breakdown[damageType.."EnemyDamage"], s_format("= %.2f", output[damageType.."EnemyDamage"]))
+
 				t_insert(breakdown["totalEnemyDamage"].rowList, {
 					type = s_format("%s", damageType),
 					value = s_format("%d", enemyDamage),
 					mult = s_format("%.2f", enemyDamageMult),
 					crit = s_format("%.2f", output["EnemyCritEffect"]),
 					convMult = s_format("%s%d", conversionExtra > 0 and "+" or (conversionExtra < 0 and "-" or ""), conversionExtra >= 0 and conversionExtra or -conversionExtra),
-					final = s_format("%d", output[damageType.."EnemyDamage"]),
+					final = s_format("%.2f", output[damageType.."EnemyDamage"]),
 					from = s_format("%s", sourceStr),
 				})
 			end
@@ -1479,7 +1480,7 @@ function calcs.buildDefenceEstimations(env, actor)
 				}
 				t_insert(breakdown[damageType.."TakenDamage"].rowList, {
 					type = s_format("%s", damageType),
-					value = s_format("%d", output[damageType.."TakenDamage"]),
+					value = s_format("%.2f", output[damageType.."TakenDamage"]),
 				})
 			end
 		end
@@ -1515,7 +1516,7 @@ function calcs.buildDefenceEstimations(env, actor)
 			if breakdown then
 				t_insert(breakdown["totalTakenDamage"].rowList, {
 					type = s_format("%s", damageType),
-					value = s_format("%d", output[damageType.."TakenDamage"]),
+					value = s_format("%.2f", output[damageType.."TakenDamage"]),
 				})
 			end
 		end
@@ -1741,7 +1742,7 @@ function calcs.buildDefenceEstimations(env, actor)
 				type = s_format("%s", damageType),
 				incoming = s_format("%.1f incoming damage", damage),
 				mult = s_format("x %.3f damage mult", output[damageType.."TakenHitMult"] ),
-				value = s_format("%d", output[damageType.."TakenHit"]),
+				value = s_format("%.2f", output[damageType.."TakenHit"]),
 			})
 			if output.AnyTakenReflect then
 				breakdown[damageType.."TakenReflectMult"] = {
@@ -2115,7 +2116,7 @@ function calcs.buildDefenceEstimations(env, actor)
 				s_format("%d ^8(frost shield limit)", output["FrostShieldLife"]),
 				s_format("/ %.2f ^8(portion taken from frost shield)", output["FrostShieldDamageMitigation"] / 100),
 				s_format("x %.2f ^8(portion taken from life and energy shield)", 1 - output["FrostShieldDamageMitigation"] / 100),
-				s_format("= %d", lifeProtected),
+				s_format("= %.2f", lifeProtected),
 			}
 		end
 		
@@ -2545,7 +2546,7 @@ function calcs.buildDefenceEstimations(env, actor)
 		breakdown["TotalEHP"] = {
 			s_format("%.2f ^8(total average number of hits you can take)", output["TotalNumberOfHits"]),
 			s_format("x %d ^8(total incoming damage)", output["totalEnemyDamageIn"]),
-			s_format("= %d ^8(total damage you can take)", output["TotalEHP"]),
+			s_format("= %.2f ^8(total damage you can take)", output["TotalEHP"]),
 		}
 	end
 	
@@ -2729,7 +2730,7 @@ function calcs.buildDefenceEstimations(env, actor)
 			breakdown[damageType.."DotEHP"] = {
 				s_format("Total Pool: %d", output[damageType.."TotalPool"]),
 				s_format("Dot Damage Taken modifier: %.2f", output[damageType.."TakenDotMult"]),
-				s_format("Total Effective Dot Pool: %d", output[damageType.."DotEHP"]),
+				s_format("Total Effective Dot Pool: %.2f", output[damageType.."DotEHP"]),
 			}
 		end
 	end

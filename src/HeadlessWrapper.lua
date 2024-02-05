@@ -1,11 +1,32 @@
-#@
+-- #@
 -- This wrapper allows the program to run headless on any OS (in theory)
 -- It can be run using a standard lua interpreter, although LuaJIT is preferable
 
+print("HeadlessWrapper")
+
+local basePath = "../runtime/lua/?.lua"
+local subPath = "../runtime/lua/sha1/?.lua;"
+package.path = package.path .. ";" .. basePath .. ";" .. subPath
+-- print(package.path)
+
+-- Make table.unpack available as a global variable
+unpack = table.unpack
+
+-- lualocal scriptPath = debug.getinfo(1, 'S').source:match("@?(.*/)")
+-- print(scriptPath)
+
+-- function testFunction()
+--     local info = debug.getinfo(1, 'nSl')
+--     print("Function name:", info.name)
+--     print("Source file:", info.source)
+--     print("Current line:", info.currentline)
+-- end
+-- testFunction()
 
 -- Callbacks
 local callbackTable = { }
 local mainObject
+
 function runCallback(name, ...)
 	if callbackTable[name] then
 		return callbackTable[name](...)
@@ -114,6 +135,7 @@ function LoadModule(fileName, ...)
 	if not fileName:match("%.lua") then
 		fileName = fileName .. ".lua"
 	end
+	-- print("LoadModule",fileName)
 	local func, err = loadfile(fileName)
 	if func then
 		return func(...)
@@ -125,6 +147,7 @@ function PLoadModule(fileName, ...)
 	if not fileName:match("%.lua") then
 		fileName = fileName .. ".lua"
 	end
+	print("PLoadModule",fileName)
 	local func, err = loadfile(fileName)
 	if func then
 		return PCall(func, ...)
@@ -183,12 +206,12 @@ end
 
 -- The build module; once a build is loaded, you can find all the good stuff in here
 build = mainObject.main.modes["BUILD"]
-
 -- Here's some helpful helper functions to help you get started
 function newBuild()
 	mainObject.main:SetMode("BUILD", false, "Help, I'm stuck in Path of Building!")
 	runCallback("OnFrame")
 end
+
 function loadBuildFromXML(xmlText, name)
 	mainObject.main:SetMode("BUILD", false, name or "", xmlText)
 	runCallback("OnFrame")
@@ -200,4 +223,33 @@ function loadBuildFromJSON(getItemsJSON, getPassiveSkillsJSON)
 	build.importTab:ImportPassiveTreeAndJewels(getPassiveSkillsJSON, charData)
 	-- You now have a build without a correct main skill selected, or any configuration options set
 	-- Good luck!
+end
+
+-- Function to read the contents of a file
+function readFile(filename)
+    local file = io.open(filename, "r")
+    if file then
+        local content = file:read("*a")
+        file:close()
+        return content
+    else
+        return nil
+    end
+end
+
+-- Path to your XML file
+local xmlFilePath = "/Users/stevenlester/projects/poebuilds/caustic arrow ballista pathfinder me after weighted sum rework.xml"
+
+-- Read XML content from the file
+local xmlContent = readFile(xmlFilePath)
+print("xml build file loaded")
+-- Check if the file was read successfully
+if xmlContent then
+    -- Assume you have a build name
+    local buildName = "Your Build Name"
+
+    -- Call the function
+    loadBuildFromXML(xmlContent, buildName)
+else
+    print("Failed to read XML file.")
 end

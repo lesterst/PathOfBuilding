@@ -17,7 +17,7 @@ function RowListClass:BuildRows(filter)
 	main.controls.filterError.label = ""
 	if filter:match("%S") then
 		local error
-		filterFunc, error = loadstring([[
+		filterFunc, error = load([[
 			return ]]..filter..[[
 		]])
 		if error then

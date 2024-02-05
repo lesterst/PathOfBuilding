@@ -1,4 +1,6 @@
-#@
+-- #@
+print("UpdateCheck")
+
 -- Path of Building
 --
 -- Module: Update Check

@@ -1,5 +1,7 @@
 -- Path of Building
 --
+print("Main")
+
 -- Module: Main
 -- Main module of program.
 --

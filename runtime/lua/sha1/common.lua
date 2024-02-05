@@ -8,7 +8,6 @@ end
 -- Splits a uint32 number into four bytes.
 function common.uint32_to_bytes(a)
    local a4 = a % 256
-   a = (a - a4) / 256
    local a3 = a % 256
    a = (a - a3) / 256
    local a2 = a % 256

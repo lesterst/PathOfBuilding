@@ -1085,7 +1085,7 @@ function UrlDecode(url)
 end
 
 function ImportTabClass:ProcessJSON(json)
-	local func, errMsg = loadstring("return "..jsonToLua(json))
+	local func, errMsg = load("return "..jsonToLua(json))
 	if errMsg then
 		return nil, errMsg
 	end

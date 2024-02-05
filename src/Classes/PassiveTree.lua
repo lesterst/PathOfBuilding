@@ -83,7 +83,7 @@ local PassiveTreeClass = newClass("PassiveTree", function(self, treeVersion)
 		treeFile:write(treeText)
 		treeFile:close()
 	end
-	for k, v in pairs(assert(loadstring(treeText))()) do
+	for k, v in pairs(assert(load(treeText))()) do
 		self[k] = v
 	end
 
@@ -153,7 +153,7 @@ local PassiveTreeClass = newClass("PassiveTree", function(self, treeVersion)
 			treeFileOLD:close()
 		end
 		local temp = {}
-		for k, v in pairs(assert(loadstring(treeTextOLD))()) do
+		for k, v in pairs(assert(load(treeTextOLD))()) do
 			temp[k] = v
 		end
 		self.assets = temp.assets

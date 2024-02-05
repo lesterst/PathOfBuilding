@@ -1,4 +1,6 @@
-#@
+-- #@
+print("UpdateApply")
+
 -- Path of Building
 --
 -- Module: Update Apply

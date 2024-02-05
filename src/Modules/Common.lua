@@ -3,6 +3,8 @@
 -- Module: Common
 -- Libraries, functions and classes used by various modules.
 --
+bit32 = require("bit32")
+bit = require("bit32")
 local pairs = pairs
 local ipairs = ipairs
 local type = type
@@ -15,17 +17,18 @@ local m_max = math.max
 local m_ceil = math.ceil
 local s_format = string.format
 local s_char = string.char
-local b_rshift = bit.rshift
-local b_and = bit.band
-local b_xor = bit.bxor
+local b_rshift = bit32.rshift
+local b_and = bit32.band
+local b_xor = bit32.bxor
 
 common = { }
 
 -- External libraries
 common.curl = require("lcurl.safe")
 common.xml = require("xml")
+-- common.base64 = require("base64")
 common.base64 = require("base64")
-common.sha1 = require("sha1")
+-- common.sha1 = require("sha1")
 
 -- Try to load a library return nil if failed. https://stackoverflow.com/questions/34965863/lua-require-fallback-error-handling
 function prerequire(...)
@@ -33,14 +36,12 @@ function prerequire(...)
 	if(status) then return lib end
 	return nil
 end
-
 profiler = prerequire("lua-profiler")
 profiling = false
 
 if launch.devMode and profiler == nil then
 	ConPrintf("Unable to Load Profiler")
 end
-
 -- Class library
 common.classes = { }
 local function addSuperParents(class, parent)

@@ -99,7 +99,7 @@ while true do
 	if str == "quit" then
 		break
 	end
-	local func, msg = loadstring(str)
+	local func, msg = load(str)
 	if func then
 		local ret, msg = pcall(func)
 		if not ret then

@@ -119,7 +119,7 @@ function breakdown.effMult(damageType, resist, pen, taken, mult, takenMore, sour
 	if sourceRes and sourceRes ~= damageType then
 		t_insert(out, s_format("Enemy %s: %d%% ^8(%s)", resistLabel, resist, sourceRes))
 	elseif resist ~= 0 then
-		t_insert(out, s_format("Enemy %s: %d%%", resistLabel, resist))
+		t_insert(out, s_format("Enemy %s: %.2f%%", resistLabel, resist))
 	end
 	if pen ~= 0 or not useRes then
 		t_insert(out, "Effective resistance:")
