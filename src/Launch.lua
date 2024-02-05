@@ -16,6 +16,14 @@ launch = { }
 SetMainObject(launch)
 
 function launch:OnInit()
+	-- This is the path to emmy_core.dll. The ?.dll at the end is intentional.
+	package.cpath = package.cpath .. ";C:/Users/leste/.vscode/extensions/tangzx.emmylua-0.5.19/debugger/emmy/windows/x86/?.dll"
+	local dbg = require("emmy_core")
+	-- This port must match the Visual Studio Code configuration. Default is 9966.
+	dbg.tcpListen("localhost", 9966)
+	-- Uncomment the next line if you want Path of Building to block until the debugger is attached
+	--dbg.waitIDE()
+	-- maybe the debugging code i put after this function goes here.  it says paste directly below function launch:OnInit()
 	self.devMode = false
 	self.installedMode = false
 	self.versionNumber = "?"
