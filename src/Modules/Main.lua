@@ -119,46 +119,41 @@ function main:Init()
 	self.tree = { }
 	self:LoadTree(latestTreeVersion)
 
-	self.uniqueDB = { list = { }, loading = true }
-	self.rareDB = { list = { }, loading = true }
-
-	local function loadItemDBs()
-		for type, typeList in pairsYield(data.uniques) do
-			for _, raw in pairs(typeList) do
-				newItem = new("Item", raw, "UNIQUE", true)
-				if newItem.base then
-					self.uniqueDB.list[newItem.name] = newItem
-				elseif launch.devMode then
-					ConPrintf("Unique DB unrecognised item of type '%s':\n%s", type, raw)
-				end
-			end
-		end
-
-		self.uniqueDB.loading = nil
-		ConPrintf("Uniques loaded")
-
-		for _, raw in pairsYield(data.rares) do
-			newItem = new("Item", raw, "RARE", true)
+	ConPrintf("Loading item databases...")
+	self.stashDB = { list = { } }
+	self.uniqueDB = { list = { } }
+	for type, typeList in pairs(data.uniques) do
+		for _, raw in pairs(typeList) do
+			local newItem = new("Item", "Rarity: Unique\n"..raw)
 			if newItem.base then
-				if newItem.crafted then
-					if newItem.base.implicit and #newItem.implicitModLines == 0 then
-						-- Automatically add implicit
-						local implicitIndex = 1
-						for line in newItem.base.implicit:gmatch("[^\n]+") do
-							t_insert(newItem.implicitModLines, { line = line, modTags = newItem.base.implicitModTypes and newItem.base.implicitModTypes[implicitIndex] or { } })
-							implicitIndex = implicitIndex + 1
-						end
-					end
-					newItem:Craft()
-				end
-				self.rareDB.list[newItem.name] = newItem
+				newItem:NormaliseQuality()
+				newItem:BuildAndParseRaw()
+				self.uniqueDB.list[newItem.name] = newItem
 			elseif launch.devMode then
-				ConPrintf("Rare DB unrecognised item:\n%s", raw)
+				ConPrintf("Unique DB unrecognised item of type '%s':\n%s", type, raw)
 			end
 		end
-
-		self.rareDB.loading = nil
-		ConPrintf("Rares loaded")
+	end
+	self.rareDB = { list = { } }
+	for _, raw in pairs(data.rares) do
+		local newItem = new("Item", "Rarity: Rare\n"..raw)
+		if newItem.base then
+			newItem:NormaliseQuality()
+			if newItem.crafted then
+				if newItem.base.implicit and #newItem.implicitModLines == 0 then
+					-- Automatically add implicit
+					local implicitIndex = 1
+					for line in newItem.base.implicit:gmatch("[^\n]+") do
+						t_insert(newItem.implicitModLines, { line = line, modTags = newItem.base.implicitModTypes and newItem.base.implicitModTypes[implicitIndex] or { } })
+						implicitIndex = implicitIndex + 1
+					end
+				end
+				newItem:Craft()
+			end
+			self.rareDB.list[newItem.name] = newItem
+		elseif launch.devMode then
+			ConPrintf("Rare DB unrecognised item:\n%s", raw)
+		end
 	end
 	
 	if self.saveNewModCache then
