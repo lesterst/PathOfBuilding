@@ -12,6 +12,15 @@ package.path = package.path .. ";" .. basePath .. ";" .. subPath
 -- Make table.unpack available as a global variable
 unpack = table.unpack
 
+-- This is the path to emmy_core.dll. The ?.dll at the end is intentional.
+package.cpath = package.cpath .. ";/Users/stevenlester/.vscode/extensions/tangzx.emmylua-0.5.19/debugger/emmy/mac/arm64/?.dylib"
+local dbg = require("emmy_core")
+-- This port must match the Visual Studio Code configuration. Default is 9966.
+dbg.tcpListen("localhost", 9966)
+-- Uncomment the next line if you want Path of Building to block until the debugger is attached
+dbg.waitIDE()
+-- /Users/stevenlester/.vscode/extensions/tangzx.emmylua-0.5.19/debugger/emmy/mac/arm64/emmy_core.dylib
+
 -- lualocal scriptPath = debug.getinfo(1, 'S').source:match("@?(.*/)")
 -- print(scriptPath)
 

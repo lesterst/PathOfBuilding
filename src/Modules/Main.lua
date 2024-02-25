@@ -37,6 +37,41 @@ LoadModule("Modules/BuildSiteTools")
 	end
 end]]
 
+-- Assuming this code is executed at a point where modLib has been populated
+
+-- Print the contents of modLib
+if itemLib then
+    ConPrintf("Contents of itemLib:")
+    for key, value in pairs(itemLib) do
+        ConPrintf("%s: %s", key, tostring(value))
+    end
+else
+    ConPrintf("itemLib not found or not defined.")
+end
+
+
+-- Check if Data and data.enchantments.Helmet are defined
+-- if data and data.enchantments and data.enchantments.Helmet then
+--     ConPrintf("Contents of Data.enchantments.Helmet:")
+--     for key, value in pairs(data.enchantments.Helmet) do
+--         ConPrintf("%s: %s", key, tostring(value))
+--     end
+-- else
+--     ConPrintf("data or data.enchantments.Helmet not found or not defined.")
+-- end
+
+-- Rest of your code...
+-- if launch.devMode then
+--     for skillName, skill in pairs(data.enchantments.Helmet) do
+--         for _, mod in ipairs(skill.ENDGAME) do
+--             local modList, extra = modLib.parseMod(mod)
+--             if not modList or extra then
+--                 ConPrintf("%s: '%s' '%s'", skillName, mod, extra or "")
+--             end
+--         end
+--     end
+-- end
+
 -- JIT (Just-In-Time) Compilation: It checks if a specific argument (--no-jit) is provided when executing the program. If found, it disables JIT compilation, likely for debugging or specific runtime considerations.
 if arg and isValueInTable(arg, "--no-jit") then
 	require("jit").off()
