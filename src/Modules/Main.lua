@@ -22,8 +22,8 @@ LoadModule("Modules/ItemTools")
 LoadModule("Modules/CalcTools")
 LoadModule("Modules/PantheonTools")
 LoadModule("Modules/BuildSiteTools")
-
---[[if launch.devMode then
+-- conPrintf(" main modules loaded")
+if launch.devMode then
 	for skillName, skill in pairs(data.enchantments.Helmet) do
 		for _, mod in ipairs(skill.ENDGAME) do
 			local modList, extra = modLib.parseMod(mod)
@@ -32,7 +32,7 @@ LoadModule("Modules/BuildSiteTools")
 			end
 		end
 	end
-end]]
+end
 
 if arg and isValueInTable(arg, "--no-jit") then
 	require("jit").off()
